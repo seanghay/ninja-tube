@@ -27,9 +27,9 @@ async function resolveSendFile(chatId, audioFile) {
 }
 
 export default async function main({ url, chatId }) {
-  // const cwd = temporaryDirectory();
+  const cwd = temporaryDirectory();
 
-  const cwd = path.resolve("./tmp/" + nanoid())
+  // const cwd = path.resolve("./tmp/" + nanoid())
   await fs.mkdir(cwd, { recursive: true });
 
   const subscription = await watcher.subscribe(cwd, async (err, events) => {
