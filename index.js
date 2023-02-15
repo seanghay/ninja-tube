@@ -21,10 +21,10 @@ bot.on('message', async ctx => {
       const files = await piscina.run({ url: ctx.message.text, chatId: ctx.message.chat.id });
       for (const { src, title } of files) {
         const filename = sanitize(title) + ".mp3";
-        // ctx.sendChatAction('upload_document');
-        // await ctx.replyWithDocument({ source: src, filename }, {
-        //   caption: title,
-        // });
+        ctx.sendChatAction('upload_document');
+        await ctx.replyWithDocument({ source: src, filename }, {
+          caption: title,
+        });
       }
       return;
     }
@@ -38,10 +38,10 @@ bot.on('message', async ctx => {
 
       for (const { src, title } of files) {
         const filename = sanitize(title) + ".mp3";
-        // ctx.sendChatAction('upload_document');
-        // await ctx.replyWithDocument({ source: src, filename },
-        //   { caption: title }
-        // );
+        ctx.sendChatAction('upload_document');
+        await ctx.replyWithDocument({ source: src, filename },
+          { caption: title }
+        );
       }
 
       return;
