@@ -36,8 +36,7 @@ export default async function main({ url, chatId }) {
     const { title } = JSON.parse(await fs.readFile(infoPath));
     files.push({ title: title.slice(0, 255), src: audioFile });
   }
-
-  await subscription.unsubscribe();
+  
   return files;
 }
 
