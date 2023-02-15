@@ -18,30 +18,30 @@ bot.on('message', async ctx => {
   queue.add(async () => {
     if (YouTubeUrl.valid(ctx.message.text)) {
       await ctx.reply("Your video is being downloaded");
-      const files = await piscina.run({ url: ctx.message.text });
+      const files = await piscina.run({ url: ctx.message.text, chatId: ctx.message.chat.id });
       for (const { src, title } of files) {
         const filename = sanitize(title) + ".mp3";
-        ctx.sendChatAction('upload_document');
-        await ctx.replyWithDocument({ source: src, filename }, {
-          caption: title,
-        });
+        // ctx.sendChatAction('upload_document');
+        // await ctx.replyWithDocument({ source: src, filename }, {
+        //   caption: title,
+        // });
       }
       return;
     }
 
     if (/\/playlist/i.test(ctx.message.text)) {
       await ctx.reply("Your video playlist is being downloaded");
-      const files = await piscina.run({ url: ctx.message.text, playlist: true, });
+      const files = await piscina.run({
+        url: ctx.message.text, playlist: true,
+        chatId: ctx.message.chat.id
+      });
 
       for (const { src, title } of files) {
         const filename = sanitize(title) + ".mp3";
-        ctx.sendChatAction('upload_document');
-        await ctx.replyWithDocument({
-          source: src,
-          filename
-        }, {
-          caption: title,
-        });
+        // ctx.sendChatAction('upload_document');
+        // await ctx.replyWithDocument({ source: src, filename },
+        //   { caption: title }
+        // );
       }
 
       return;
