@@ -8,6 +8,7 @@
 		"nanoid": "^4.0.1",
 		"p-queue": "^7.3.0",
 		"piscina": "^3.2.0",
+		"sanitize-filename": "^1.6.3",
 		"telegraf": "^4.11.2",
 		"tempy": "^3.0.0",
 		"youtube-url": "^0.5.0"

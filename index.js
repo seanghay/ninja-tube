@@ -4,6 +4,7 @@ import 'dotenv/config.js';
 import { Piscina } from 'piscina';
 import { Telegraf } from 'telegraf';
 import PQueue from 'p-queue';
+import sanitize from 'sanitize-filename';
 
 const { TELEGRAM_TOKEN } = process.env;
 const workerFilename = new URL("./worker.js", import.meta.url).href
@@ -19,7 +20,7 @@ bot.on('message', async ctx => {
       await ctx.reply("Your video is being downloaded");
       const files = await piscina.run({ url: ctx.message.text });
       for (const { src, title } of files) {
-        const filename = title + ".mp3";
+        const filename = sanitize(title) + ".mp3";
         ctx.sendChatAction('upload_document');
         await ctx.replyWithDocument({ source: src, filename }, {
           caption: title,
@@ -31,13 +32,18 @@ bot.on('message', async ctx => {
     if (/\/playlist/i.test(ctx.message.text)) {
       await ctx.reply("Your video playlist is being downloaded");
       const files = await piscina.run({ url: ctx.message.text, playlist: true, });
+
       for (const { src, title } of files) {
-        const filename = title + ".mp3";
+        const filename = sanitize(title) + ".mp3";
         ctx.sendChatAction('upload_document');
-        await ctx.replyWithDocument({ source: src, filename }, {
+        await ctx.replyWithDocument({
+          source: src,
+          filename
+        }, {
           caption: title,
         });
       }
+
       return;
     }
 
