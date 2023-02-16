@@ -6,7 +6,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sanitize from 'sanitize-filename';
 
-export default async function main({ url, chatId, ext = "m4a" }) {
+export default async function main({ url, chatId, ext = "mp3" }) {
   const cwd = temporaryDirectory();
 
   // const cwd = path.resolve("./tmp/" + nanoid())
