@@ -29,6 +29,8 @@ export default async function main({ url, chatId, ext = "mp3" }) {
     "--no-part",
     "--no-playlist",
     "--embed-metadata",
+    "--max-filesize",
+    "50M",
     ...args,
     "--output",
     "%(id)s.%(ext)s",
