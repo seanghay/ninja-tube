@@ -4,8 +4,9 @@ import { temporaryDirectory } from 'tempy';
 import { execa } from 'execa';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import sanitize from 'sanitize-filename';
 
-export default async function main({ url, chatId }) {
+export default async function main({ url, chatId, ext = "m4a" }) {
   const cwd = temporaryDirectory();
 
   // const cwd = path.resolve("./tmp/" + nanoid())
@@ -14,32 +15,40 @@ export default async function main({ url, chatId }) {
   console.info("path: " + JSON.stringify(cwd));
   console.info('downloading: ' + JSON.stringify(url));
 
-  const subprocess = execa('yt-dlp', [
+  const args = (ext === "mp3") ? [
     "--extract-audio",
+    "--audio-format",
+    "mp3",
+  ] : [
+    "-f",
+    "ba[ext=m4a]"
+  ]
+
+  const subprocess = execa('yt-dlp', [
     "--write-info-json",
     "--no-part",
     "--no-playlist",
     "--embed-metadata",
-    "--audio-format",
-    "mp3",
+    ...args,
     "--output",
     "%(id)s.%(ext)s",
     url
   ], { cwd });
 
   subprocess.stdout.pipe(process.stdout);
-  
+
   await subprocess;
 
   const files = [];
 
-  for await (const audioFile of fg.stream(`${cwd}/*.mp3`)) {
+  for await (const audioFile of fg.stream(`${cwd}/*.${ext}`)) {
     const { dir, name } = path.parse(audioFile);
     const infoPath = path.join(dir, name + ".info.json");
     const { title } = JSON.parse(await fs.readFile(infoPath));
-    files.push({ title: title.slice(0, 255), src: audioFile });
+    const filename = sanitize(title) + "." + ext;
+    files.push({ filename, title: title.slice(0, 255), src: audioFile });
   }
-  
+
   return files;
 }
 
