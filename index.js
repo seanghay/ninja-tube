@@ -16,9 +16,11 @@ const bot = new Telegraf(TELEGRAM_TOKEN);
 bot.start(ctx => ctx.reply("Hi! Get started by sending me a link of YouTube video or playlist."));
 bot.on('message', async ctx => {
   queue.add(async () => {
-    if (YouTubeUrl.valid(ctx.message.text)) {
-      await ctx.reply("Your video is being downloaded");
-      const files = await piscina.run({ url: ctx.message.text, chatId: ctx.message.chat.id });
+
+    const text = ctx.message.text;
+    
+    const download = async () => {
+      const files = await piscina.run({ url: text, chatId: ctx.message.chat.id });
       for (const { src, title } of files) {
         const filename = sanitize(title) + ".mp3";
         ctx.sendChatAction('upload_document');
@@ -26,25 +28,23 @@ bot.on('message', async ctx => {
           caption: title,
         });
       }
+    }
+
+    if (YouTubeUrl.valid(text)) {
+      await ctx.reply("Your video is being downloaded");
+      await download();
       return;
     }
 
-    if (/\/playlist/i.test(ctx.message.text)) {
+    if (/\/playlist/i.test(text)) {
       await ctx.reply("Your video playlist is being downloaded");
-      const files = await piscina.run({
-        url: ctx.message.text, playlist: true,
-        chatId: ctx.message.chat.id
-      });
-
-      for (const { src, title } of files) {
-        const filename = sanitize(title) + ".mp3";
-        ctx.sendChatAction('upload_document');
-        await ctx.replyWithDocument({ source: src, filename },
-          { caption: title }
-        );
-      }
-
+      await download();
       return;
+    }
+
+    if (/(https?:\/\/)?(www.)?(youtube\.com|youtu\.be)\/\w+/i.test(text)) {
+      await ctx.reply("Your live video is being downloaded");
+      await download();
     }
 
     await ctx.reply("invalid");
