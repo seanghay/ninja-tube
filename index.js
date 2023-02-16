@@ -18,9 +18,9 @@ bot.on('message', async ctx => {
   queue.add(async () => {
 
     const text = ctx.message.text;
-    
-    const download = async () => {
-      const files = await piscina.run({ url: text, chatId: ctx.message.chat.id });
+
+    const download = async (url) => {
+      const files = await piscina.run({ url, chatId: ctx.message.chat.id });
       for (const { src, title } of files) {
         const filename = sanitize(title) + ".mp3";
         ctx.sendChatAction('upload_document');
@@ -32,19 +32,25 @@ bot.on('message', async ctx => {
 
     if (YouTubeUrl.valid(text)) {
       await ctx.reply("Your video is being downloaded");
-      await download();
+      await download(text);
       return;
     }
 
     if (/\/playlist/i.test(text)) {
       await ctx.reply("Your video playlist is being downloaded");
-      await download();
+      await download(text);
       return;
     }
 
-    if (/(https?:\/\/)?(www.)?(youtube\.com|youtu\.be)\/\w+/i.test(text)) {
-      await ctx.reply("Your live video is being downloaded");
-      await download();
+    if (/^(https?:\/\/)?(www.)?(youtube\.com|youtu\.be)\/(live\/)?(\w+)/i.test(text)) {
+      const result = /^(https?:\/\/)?(www.)?(youtube\.com|youtu\.be)\/(live\/)?(\w+)/i.exec(text);
+
+      if (result) {
+        const videoId = result[5];
+        await ctx.reply(`Your live video is being downloaded. [${videoId}]`);
+        await download(videoId);
+        return;
+      }
     }
 
     await ctx.reply("invalid");

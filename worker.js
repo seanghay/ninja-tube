@@ -4,7 +4,6 @@ import { temporaryDirectory } from 'tempy';
 import { execa } from 'execa';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { nanoid } from 'nanoid';
 
 export default async function main({ url, chatId }) {
   const cwd = temporaryDirectory();
