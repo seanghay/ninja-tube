@@ -14,7 +14,7 @@ export default async function main({ url, chatId }) {
   console.info("path: " + JSON.stringify(cwd));
   console.info('downloading: ' + JSON.stringify(url));
 
-  await execa('yt-dlp', [
+  const subprocess = execa('yt-dlp', [
     "--extract-audio",
     "--write-info-json",
     "--no-part",
@@ -26,6 +26,10 @@ export default async function main({ url, chatId }) {
     "%(id)s.%(ext)s",
     url
   ], { cwd });
+
+  subprocess.stdout.pipe(process.stdout);
+  
+  await subprocess;
 
   const files = [];
 
