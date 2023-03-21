@@ -6,7 +6,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sanitize from 'sanitize-filename';
 
-export default async function main({ url, chatId, ext = "mp3" }) {
+export default async function main({ url, ext = "mp3" }) {
   const cwd = temporaryDirectory();
 
   // const cwd = path.resolve("./tmp/" + nanoid())
@@ -46,9 +46,16 @@ export default async function main({ url, chatId, ext = "mp3" }) {
   for await (const audioFile of fg.stream(`${cwd}/*.${ext}`)) {
     const { dir, name } = path.parse(audioFile);
     const infoPath = path.join(dir, name + ".info.json");
-    const { title } = JSON.parse(await fs.readFile(infoPath));
+    const info = JSON.parse(await fs.readFile(infoPath));
+    const { title, duration } = info;
     const filename = sanitize(title) + "." + ext;
-    files.push({ filename, title: title.slice(0, 255), src: audioFile });
+
+    files.push({
+      filename,
+      duration,
+      title: title.slice(0, 255),
+      src: audioFile
+    });
   }
 
   return files;

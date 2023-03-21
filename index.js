@@ -20,10 +20,15 @@ bot.on('message', async ctx => {
 
     const download = async (url) => {
       const files = await piscina.run({ url, chatId: ctx.message.chat.id });
-      for (const { filename, src, title } of files) {
-        ctx.sendChatAction('upload_document');
-        await ctx.replyWithDocument({ source: src, filename }, {
+      for (const { filename, src, title, duration } of files) {
+        ctx.sendChatAction('upload_voice');
+        await ctx.replyWithAudio({
+          source: src,
+          filename,
+        }, {
+          duration,
           caption: title,
+          title: title,
         });
       }
     }
