@@ -6,7 +6,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import sanitize from 'sanitize-filename';
 
-export default async function main({ url, ext = "mp3" }) {
+export default async function main({ url, maxSize = "50M", ext = "mp3" }) {
   const cwd = temporaryDirectory();
 
   // const cwd = path.resolve("./tmp/" + nanoid())
@@ -30,7 +30,7 @@ export default async function main({ url, ext = "mp3" }) {
     "--no-playlist",
     "--embed-metadata",
     "--max-filesize",
-    "50M",
+    maxSize,
     ...args,
     "--output",
     "%(id)s.%(ext)s",

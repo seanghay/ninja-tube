@@ -27,7 +27,7 @@ server.get('/watch', async (req, res) => {
 
   let { type, v: id } = req.query;
   if (!['mp3', 'm4a'].includes(type)) type = 'mp3';
-  const files = await piscina.run({ url: id, ext: type });
+  const files = await piscina.run({ maxSize: "2048M", url: id, ext: type });
 
   if (files.length > 0) {
     const { filename, src, duration, title } = files[0];
@@ -39,7 +39,7 @@ server.get('/watch', async (req, res) => {
     fs.createReadStream(src).pipe(res);
     return;
   }
-  
+
   return res.status(404).end();
 });
 
