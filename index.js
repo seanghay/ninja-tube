@@ -4,6 +4,8 @@ import 'dotenv/config.js';
 import { Piscina } from 'piscina';
 import { Telegraf } from 'telegraf';
 import PQueue from 'p-queue';
+import http from './http.js';
+import gracefulShutdown from 'http-graceful-shutdown';
 
 const { TELEGRAM_TOKEN } = process.env;
 const workerFilename = new URL("./worker.js", import.meta.url).href
@@ -60,8 +62,8 @@ bot.on('message', async ctx => {
   })
 })
 
+http.listen(process.env.PORT || 8080, () => bot.launch());
 
-await bot.launch();
-
+gracefulShutdown(http);
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
